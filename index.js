@@ -3,8 +3,10 @@
  * @@l@@ - line number
  * @@F@@ - pathname of the file that including this file
  * @@L@@ - a line number of the file that including this file
- * @@include "/foo/bar.html"  - include with path from base
- * @@include "./foo/bar.html" - include with path from including file
+ * @@+ "/foo/bar.html"  - include with path from base
+ * @@+ "./foo/bar.html" - include with path from including file
+ * @@+ "..."  - just include
+ * @@_+ "..." - include with indentation
  */
 
 const 
@@ -62,15 +64,18 @@ function repl(file, includerP="", includerLN="") {
 			res += includerLN.replaceAll("\\", "/");
 		} else if (match(CR, /\\@@/y)) {
 			res += "@@";
-		} else if (m = match(CR, /@@include\s*"([^"]+)"/y)) {
-			const rawPath = m[1];
-			let fullPath = "";
-			if (rawPath.startsWith("." || rawPath.startsWith(".."))) {
-				fullPath = M.path.resolve(file.dirname, rawPath);
-			} else if (rawPath.startsWith("/" || rawPath.startsWith("\\"))) {
-				fullPath = M.path.join(file.base, rawPath);
-			}
+		} else if (m = match(CR, /@@\+\s*"([^"]+)"/y)) {
+			const 
+				rawPath = m[1],
+				fullPath = resolvePath(file, rawPath);
 			res += getIncluded(fullPath, file.base, file.path, lineNum.toString());
+		} else if (m = match(CR, /@@_\+\s*"([^"]+)"/y)) {
+			const 
+				rawPath  = m[1],
+				fullPath = resolvePath(file, rawPath),
+				indent   = getIndent(CR.text, m.index),
+				includedText = getIncluded(fullPath, file.base, file.path, lineNum.toString());
+			res += getWithIndents(includedText, indent);
 		} else {
 			res += CR.text[CR.i ++];
 		}
@@ -81,6 +86,26 @@ function repl(file, includerP="", includerLN="") {
 		}
 	}
 	return res;
+}
+
+function resolvePath(includingFile, path) {
+	if (path.startsWith("." || path.startsWith(".."))) {
+		return M.path.resolve(includingFile.dirname, path);
+	} else if (path.startsWith("/" || path.startsWith("\\"))) {
+		return M.path.join(includingFile.base, path);
+	}
+}
+
+function getIndent(text, i) {
+	const 
+		before = text.substr(0, i),
+		m = before.match(/\n([ \t]*)$/),
+		indent = m ? m[1] : "";
+	return indent;
+}
+
+function getWithIndents(text, indent) {
+	return text.split("\n").join("\n"+indent);
 }
 
 function match(CR, t) {
