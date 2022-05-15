@@ -27,20 +27,6 @@ module.exports = function include() {
 	);
 }
 
-function getIncluded(p, base, includerP, includerLN) {
-	const 
-		rawText = M.fs.readFileSync(p, 'utf-8'),
-		file = new M.Vinyl({
-			cwd: process.cwd(),
-			base: base,
-			path: p,
-			contents: Buffer.from(rawText)
-		}),
-		finalText = repl(file, includerP, includerLN);
-	// file.contents = Buffer.from(finalText);
-	return finalText;
-}
-
 function repl(file, includerP="", includerLN="") {
 	const CR = {
 		text: file.contents.toString(),
@@ -86,6 +72,19 @@ function repl(file, includerP="", includerLN="") {
 		}
 	}
 	return res;
+}
+
+function getIncluded(p, base, includerP, includerLN) {
+	const 
+		rawText = M.fs.readFileSync(p, 'utf-8'),
+		file = new M.Vinyl({
+			cwd: process.cwd(),
+			base: base,
+			path: p,
+			contents: Buffer.from(rawText)
+		}),
+		finalText = repl(file, includerP, includerLN);
+	return finalText;
 }
 
 function resolvePath(includingFile, path) {
