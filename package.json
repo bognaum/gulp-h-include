@@ -1,6 +1,6 @@
 {
-  "name": "html-include",
-  "version": "0.0.1",
+  "name": "gulp-html-by-parts",
+  "version": "1.0.0",
   "description": "To including HTML files wia Gulp",
   "main": "index.js",
   "scripts": {
