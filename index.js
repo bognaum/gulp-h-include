@@ -1,3 +1,12 @@
+/**
+ * @@f@@ - file pathname
+ * @@l@@ - line number
+ * @@F@@ - pathname of the file that including this file
+ * @@L@@ - a line number of the file that including this file
+ * @@include "/foo/bar.html"  - include with path from base
+ * @@include "./foo/bar.html" - include with path from including file
+ */
+
 const 
 	M = {
 		thr2o        : require("through2").obj,
