@@ -1,5 +1,5 @@
 {
-  "name": "gulp-html-by-parts",
+  "name": "gulp-h-include",
   "version": "1.0.0",
   "description": "To including HTML files wia Gulp",
   "main": "index.js",
